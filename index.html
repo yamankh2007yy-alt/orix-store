@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORIX</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+html{scroll-behavior:smooth}
+
+body{
+  background:
+    radial-gradient(circle at top, rgba(255,0,0,0.08), transparent 25%),
+    linear-gradient(180deg,#050505 0%,#080808 100%);
+  color:white;
+  overflow-x:hidden;
+}
+body.rtl{direction:rtl;text-align:right}
+
+/* NAV */
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 34px;position:fixed;width:100%;top:0;z-index:1000;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  animation:navDrop .8s ease;
+}
+.logo{
+  font-size:32px;font-weight:900;letter-spacing:6px;text-transform:uppercase
+}
+.nav-right{display:flex;gap:10px;align-items:center}
+.nav-btn{
+  color:white;text-decoration:none;background:rgba(255,255,255,0.07);
+  padding:10px 16px;border-radius:999px;transition:.25s;
+  border:1px solid rgba(255,255,255,0.08);cursor:pointer
+}
+.nav-btn:hover{
+  background:rgba(255,0,0,0.95);transform:translateY(-1px)
+}
+
+/* HERO */
+.hero{
+  min-height:100vh;padding:110px 40px 40px;
+  display:flex;align-items:center;justify-content:center;
+  perspective:1200px;
+}
+.hero-box{
+  position:relative;overflow:hidden;width:100%;max-width:1200px;
+  min-height:560px;border-radius:30px;display:flex;
+  align-items:center;justify-content:center;text-align:center;
+  padding:40px 30px;
+  background:
+    linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.68)),
+    url("https://images.unsplash.com/photo-1558611848-73f7eb4001a1?q=80&w=1600") center/cover no-repeat;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 20px 50px rgba(0,0,0,0.30);
+  animation:heroZoom 1.3s ease;
+  transition:transform .18s ease-out, box-shadow .18s ease-out;
+  will-change:transform;
+}
+.hero-box::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,0,0,0.18), transparent 25%),
+    linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  animation:shine 7s linear infinite;
+}
+.hero-content{
+  position:relative;z-index:1;max-width:850px;
+}
+.hero-badge{
+  display:inline-block;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);color:#ddd;
+  padding:9px 16px;border-radius:999px;margin-bottom:18px;
+  font-size:13px;letter-spacing:1px;
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp .8s ease .2s forwards;
+  transition:transform .18s ease-out;
+  will-change:transform;
+}
+.hero h1{
+  font-size:76px;line-height:.95;margin-bottom:18px;
+  opacity:0;transform:translateY(28px);
+  animation:titleReveal .95s cubic-bezier(.2,.8,.2,1) .35s forwards;
+  text-shadow:0 12px 30px rgba(0,0,0,0.25);
+  transition:transform .18s ease-out;
+  will-change:transform;
+}
+.hero p{
+  max-width:760px;margin:0 auto 24px;color:#d0d0d0;
+  font-size:18px;line-height:1.7;
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp .8s ease .55s forwards;
+  transition:transform .18s ease-out;
+  will-change:transform;
+}
+.hero-actions{
+  display:flex;justify-content:center;gap:14px;
+  flex-wrap:wrap;margin-top:10px
+}
+.shop-btn,.ghost-btn{
+  opacity:0;transform:translateY(22px);
+  animation:fadeUp .8s ease forwards;
+}
+.shop-btn{
+  animation-delay:.72s;
+  padding:15px 34px;background:linear-gradient(135deg,#ff1f1f,#d80000);
+  border-radius:30px;text-decoration:none;color:white;font-size:17px;
+  font-weight:bold;transition:.25s;
+  box-shadow:0 10px 24px rgba(255,0,0,0.22)
+}
+.shop-btn:hover{
+  transform:translateY(-2px) scale(1.03);
+  background:linear-gradient(135deg,#ff2b2b,#e40000)
+}
+.ghost-btn{
+  animation-delay:.82s;
+  padding:15px 28px;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:30px;text-decoration:none;color:white;
+  font-size:17px;transition:.25s
+}
+.ghost-btn:hover{
+  transform:translateY(-2px);
+  background:rgba(255,255,255,0.14)
+}
+
+/* CATEGORIES */
+.categories{padding:0 40px 50px}
+.categories-head{
+  max-width:1200px;margin:0 auto 22px;
+  opacity:0;transform:translateY(30px);
+  transition:.8s ease;
+}
+.categories-head.show{opacity:1;transform:translateY(0)}
+.categories-head h2{font-size:34px;margin-bottom:10px}
+.categories-head p{color:#bdbdbd;line-height:1.7}
+
+.category-grid{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px
+}
+.category-card{
+  display:block;text-decoration:none;color:white;
+  background:linear-gradient(180deg,#171717,#0c0c0c);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:24px;padding:24px 20px;transition:.35s ease;
+  box-shadow:0 12px 30px rgba(0,0,0,0.18);
+  opacity:0;transform:translateY(36px) scale(.98);
+}
+.category-card.show{
+  opacity:1;transform:translateY(0) scale(1);
+}
+.category-card:hover{
+  transform:translateY(-8px) scale(1.015);
+  box-shadow:0 18px 40px rgba(0,0,0,0.34),0 0 20px rgba(255,0,0,0.10);
+  border-color:rgba(255,255,255,0.11)
+}
+.category-icon{
+  font-size:34px;margin-bottom:14px;
+  transition:transform .35s ease;
+}
+.category-card:hover .category-icon{
+  transform:scale(1.12) rotate(-4deg);
+}
+.category-card h3{font-size:22px;margin-bottom:8px}
+.category-card p{color:#bcbcbc;line-height:1.6;font-size:14px}
+
+.footer{
+  padding:30px 20px 40px;text-align:center;color:#888;
+  opacity:0;transform:translateY(24px);transition:.8s ease;
+}
+.footer.show{opacity:1;transform:translateY(0)}
+
+/* ANIMATIONS */
+@keyframes navDrop{
+  from{opacity:0;transform:translateY(-18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes heroZoom{
+  from{opacity:0;transform:scale(.97)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes titleReveal{
+  from{opacity:0;transform:translateY(30px);letter-spacing:1px}
+  to{opacity:1;transform:translateY(0);letter-spacing:0}
+}
+@keyframes shine{
+  0%{transform:translateX(-120%)}
+  100%{transform:translateX(120%)}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav{padding:16px 18px}
+  .logo{font-size:26px;letter-spacing:4px}
+  .hero{padding:95px 18px 24px}
+  .hero-box{min-height:500px;border-radius:22px;padding:30px 18px}
+  .hero h1{font-size:46px}
+  .hero p{font-size:16px}
+  .categories{padding:0 18px 40px}
+  .categories-head h2{font-size:28px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="nav">
+  <div class="logo">ORIX</div>
+  <div class="nav-right">
+    <button class="nav-btn" onclick="toggleLang()">🌐</button>
+    <a class="nav-btn" href="football.html" id="navShop">Shop</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-box" id="heroBox">
+    <div class="hero-content">
+      <div class="hero-badge" id="badge">SPORTS • FITNESS • PERFORMANCE</div>
+      <h1 id="title">Train Hard.<br>Look Strong.</h1>
+      <p id="desc">Premium fitness gear for real athletes. Explore every category with a cleaner, stronger, and more professional shopping experience.</p>
+
+      <div class="hero-actions">
+        <a class="shop-btn" href="football.html" id="shop">Shop Now</a>
+        <a class="ghost-btn" href="#categories" id="browse">Browse Categories</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="categories" id="categories">
+  <div class="categories-head" id="categoriesHead">
+    <h2 id="catTitle">Shop by Category</h2>
+    <p id="catDesc">Choose the section you want and go directly to the products inside it.</p>
+  </div>
+
+  <div class="category-grid">
+    <a class="category-card reveal-card" href="football.html">
+      <div class="category-icon">⚽</div>
+      <h3 id="f">Football</h3>
+      <p id="fd">Boots, balls, and football essentials.</p>
+    </a>
+
+    <a class="category-card reveal-card" href="basketball.html">
+      <div class="category-icon">🏀</div>
+      <h3 id="b">Basketball</h3>
+      <p id="bd">Basketball products and court essentials.</p>
+    </a>
+
+    <a class="category-card reveal-card" href="gym.html">
+      <div class="category-icon">🏋️</div>
+      <h3 id="g">Gym</h3>
+      <p id="gd">Weights, gear, and training accessories.</p>
+    </a>
+
+    <a class="category-card reveal-card" href="gloves.html">
+      <div class="category-icon">🥊</div>
+      <h3 id="gl">Gloves</h3>
+      <p id="gld">Training gloves and hand protection products.</p>
+    </a>
+
+    <a class="category-card reveal-card" href="Accessories.html">
+      <div class="category-icon">🎯</div>
+      <h3 id="a">Accessories</h3>
+      <p id="ad">Extra sports tools and useful add-ons.</p>
+    </a>
+
+    <a class="category-card reveal-card" href="jerseys.html">
+      <div class="category-icon">👕</div>
+      <h3 id="j">Jerseys</h3>
+      <p id="jd">Sports jerseys and teamwear styles.</p>
+    </a>
+  </div>
+</section>
+
+<div class="footer" id="footer">ORIX © 2026</div>
+
+<script>
+let lang = localStorage.getItem("lang") || "en";
+
+const t={
+en:{
+badge:"SPORTS • FITNESS • PERFORMANCE",
+title:"Train Hard.<br>Look Strong.",
+desc:"Premium fitness gear for real athletes. Explore every category with a cleaner, stronger, and more professional shopping experience.",
+shop:"Shop Now",
+browse:"Browse Categories",
+navShop:"Shop",
+catTitle:"Shop by Category",
+catDesc:"Choose the section you want and go directly to the products inside it.",
+f:"Football", fd:"Boots, balls, and football essentials.",
+b:"Basketball", bd:"Basketball products and court essentials.",
+g:"Gym", gd:"Weights, gear, and training accessories.",
+gl:"Gloves", gld:"Training gloves and hand protection products.",
+a:"Accessories", ad:"Extra sports tools and useful add-ons.",
+j:"Jerseys", jd:"Sports jerseys and teamwear styles."
+},
+ar:{
+badge:"رياضة • لياقة • أداء",
+title:"تمرّن بقوة<br>واظهر بشكل أقوى",
+desc:"أفضل معدات رياضية للمحترفين. استكشف كل الأقسام بتجربة أقوى وأكثر احترافية.",
+shop:"تسوق الآن",
+browse:"تصفح الأقسام",
+navShop:"تسوق",
+catTitle:"تسوق حسب القسم",
+catDesc:"اختر القسم الذي تريده واذهب مباشرة إلى المنتجات.",
+f:"كرة القدم", fd:"أحذية وكرات وكل مستلزمات كرة القدم.",
+b:"كرة السلة", bd:"منتجات كرة السلة ومستلزمات الملعب.",
+g:"معدات الجيم", gd:"أوزان ومعدات تدريب.",
+gl:"قفازات", gld:"قفازات تدريب وحماية اليد.",
+a:"إكسسوارات", ad:"أدوات رياضية إضافية.",
+j:"كنزات رياضية", jd:"ملابس رياضية وكنزات."
+}
+};
+
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  document.body.classList.toggle("rtl",lang==="ar");
+
+  for(let id in t[lang]){
+    const el = document.getElementById(id);
+    if(el){
+      if(id==="title") el.innerHTML=t[lang][id];
+      else el.innerText=t[lang][id];
+    }
+  }
+  localStorage.setItem("lang",lang);
+}
+
+function toggleLang(){
+  lang=lang==="en"?"ar":"en";
+  applyLang();
+}
+
+applyLang();
+
+const cards = document.querySelectorAll('.reveal-card');
+const categoriesHead = document.getElementById('categoriesHead');
+const footer = document.getElementById('footer');
+
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('show');
+    }
+  });
+},{threshold:0.12});
+
+observer.observe(categoriesHead);
+observer.observe(footer);
+
+cards.forEach((card,index)=>{
+  card.style.transitionDelay = `${index * 90}ms`;
+  observer.observe(card);
+});
+
+/* HERO PARALLAX */
+const heroBox = document.getElementById('heroBox');
+const heroTitle = document.getElementById('title');
+const heroDesc = document.getElementById('desc');
+const heroBadge = document.getElementById('badge');
+
+function resetParallax(){
+  heroBox.style.transform = 'rotateX(0deg) rotateY(0deg) translateY(0)';
+  heroTitle.style.transform = 'translate3d(0,0,0)';
+  heroDesc.style.transform = 'translate3d(0,0,0)';
+  heroBadge.style.transform = 'translate3d(0,0,0)';
+}
+
+heroBox.addEventListener('mousemove', (e) => {
+  const rect = heroBox.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+
+  const rotateY = ((x - centerX) / centerX) * 4;
+  const rotateX = ((centerY - y) / centerY) * 4;
+
+  heroBox.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+  heroTitle.style.transform = `translate3d(${rotateY * 2}px, ${-rotateX * 2}px, 0)`;
+  heroDesc.style.transform = `translate3d(${rotateY * 1.4}px, ${-rotateX * 1.4}px, 0)`;
+  heroBadge.style.transform = `translate3d(${rotateY * 1}px, ${-rotateX * 1}px, 0)`;
+});
+
+heroBox.addEventListener('mouseleave', resetParallax);
+
+if (window.innerWidth < 769) {
+  heroBox.removeEventListener?.('mousemove', () => {});
+  resetParallax();
+}
+</script>
+
+</body>
+</html>
